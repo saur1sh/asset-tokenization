@@ -1,0 +1,46 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: identity-wallet-service
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5433/wallet_db
+    username: ${WALLET_USER}
+    password: ${WALLET_PASS}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      group-id: wallet-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}

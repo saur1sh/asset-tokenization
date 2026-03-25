@@ -1,0 +1,11 @@
+package com.rwa.asset.repository;
+
+import com.rwa.asset.entity.AssetReservation;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.UUID;
+
+@Repository
+public interface AssetReservationRepository extends JpaRepository<AssetReservation, UUID> {
+}
