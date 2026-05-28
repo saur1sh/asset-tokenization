@@ -4,12 +4,12 @@ import com.rwa.asset.entity.OutboxEvent;
 import com.rwa.asset.repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.springframework.data.domain.PageRequest;
 import java.util.List;
 
 @Component
@@ -27,8 +27,13 @@ public class OutboxScheduler {
         for (OutboxEvent event : events) {
             String topic = event.getType();
             log.info("Publishing event {} to Kafka topic {}", event.getId(), topic);
-            kafkaTemplate.send(topic, event.getAggregateId(), event.getPayload());
-            outboxEventRepository.delete(event);
+            try {
+                kafkaTemplate.send(topic, event.getAggregateId(), event.getPayload()).get();
+                outboxEventRepository.delete(event);
+            } catch (Exception e) {
+                log.error("Failed to publish event: {}", e.getMessage());
+                throw new RuntimeException(e);
+            }
         }
     }
 }

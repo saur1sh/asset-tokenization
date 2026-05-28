@@ -1,8 +1,8 @@
 package com.rwa.asset.event;
 
+import com.rwa.asset.service.AssetService;
 import com.rwa.common.constants.RwaConstants;
 import com.rwa.common.events.AssetPriceUpdatedEvent;
-import com.rwa.asset.service.AssetService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

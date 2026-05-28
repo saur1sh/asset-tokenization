@@ -2,8 +2,6 @@ package com.rwa.common.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
@@ -11,10 +9,10 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 public class TradeFailedEvent {
-    private UUID tradeId;
-    private UUID buyerId;
-    private UUID assetId;
-    private java.math.BigDecimal fractions;
-    private java.math.BigDecimal priceAmount;
-    private String reason;
+    UUID tradeId;
+    UUID buyerId;
+    UUID assetId;
+    java.math.BigDecimal fractions;
+    java.math.BigDecimal priceAmount;
+    String reason;
 }

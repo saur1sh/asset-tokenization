@@ -79,7 +79,7 @@ echo "[TEST] Scenario C: Non-KYC User"
 USER_C=$(uuidgen)
 curl -s -X POST "$WALLET_URL/api/wallets" \
      -H "Content-Type: application/json" \
-     -d "{\"userId\": \"$USER_C\", \"initialBalance\": 1000, \"currency\": \"USD\"}"
+     -d "{\"userId\": \"$USER_C\", \"initialBalance\": 1000, \"currency\": \"USD\"}" > /dev/null
 
 TRADE_C=$(curl -s -X POST "$SETTLEMENT_URL/api/settlement/trade" \
      -H "Content-Type: application/json" \
@@ -87,6 +87,24 @@ TRADE_C=$(curl -s -X POST "$SETTLEMENT_URL/api/settlement/trade" \
 T_ID_C=$(echo $TRADE_C | jq -r .id)
 echo "Trade initiated: $T_ID_C"
 echo "Final Saga Status for Scenario C: $(wait_for_saga $T_ID_C)"
+echo -e "\n"
+
+# Scenario D: AML Limit Exceeded
+echo "[TEST] Scenario D: AML Limit Exceeded (> $1000000 limit)"
+USER_D=$(uuidgen)
+curl -s -X POST "$WALLET_URL/api/wallets" \
+     -H "Content-Type: application/json" \
+     -d "{\"userId\": \"$USER_D\", \"initialBalance\": 5000000, \"currency\": \"USD\"}" > /dev/null
+curl -s -X POST "$WALLET_URL/api/wallets/$USER_D/kyc" \
+     -H "Content-Type: application/json" \
+     -d "{\"status\": \"VERIFIED\"}" > /dev/null
+
+TRADE_D=$(curl -s -X POST "$SETTLEMENT_URL/api/settlement/trade" \
+     -H "Content-Type: application/json" \
+     -d "{\"buyerId\": \"$USER_D\", \"assetId\": \"$ASSET_B_ID\", \"fractions\": 10, \"priceAmount\": 1500000}")
+T_ID_D=$(echo $TRADE_D | jq -r .id)
+echo "Trade initiated: $T_ID_D"
+echo "Final Saga Status for Scenario D: $(wait_for_saga $T_ID_D)"
 echo -e "\n"
 
 echo "Negative Test Suite Complete."
